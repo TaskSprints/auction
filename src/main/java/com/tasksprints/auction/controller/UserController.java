@@ -17,33 +17,35 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/users")
-    public ResponseEntity<List<UserDto>> getUsers() {
-        List<UserDto> users = userService.findAll();
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        List<UserDto> responseDtos = userService.findAll();
         return ResponseEntity.status(HttpStatus.OK)
-                .body(users);
+                .body(responseDtos);
     }
 
     @GetMapping("/user/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
-        UserDto userDto = UserDto.fromEntity(userService.findById(id));
+        UserDto responseDto = UserDto.fromEntity(userService.findById(id));
         return ResponseEntity.status(HttpStatus.OK)
-                .body(userDto);
+                .body(responseDto);
     }
 
     @PostMapping("/user")
-    public ResponseEntity<?> addUser(@RequestBody UserDto userDto) {
-        User user = userService.save(userDto);
+    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
+        User savedUser = userService.save(userDto);
+        UserDto responseDto = UserDto.fromEntity(savedUser);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(user);
+                .body(responseDto);
     }
     @PutMapping("/user/{id}")
-    public ResponseEntity<?> updateUser(@RequestBody UserDto userDto, @PathVariable Long id) {
-        User user = userService.update(id, userDto);
+    public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, @PathVariable Long id) {
+        User updatedUser = userService.update(id, userDto);
+        UserDto responseDto = UserDto.fromEntity(updatedUser);
         return ResponseEntity.status(HttpStatus.OK)
-                .body(user);
+                .body(responseDto);
     }
     @DeleteMapping("/user/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.delete(id);
         return ResponseEntity.noContent().build();
     }

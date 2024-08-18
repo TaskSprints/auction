@@ -25,25 +25,28 @@ public class AuctionController {
                 .body(auctions);
     }
     @GetMapping("/auction/{id}")
-    public ResponseEntity<Auction> getAuctionById(@PathVariable Long id) {
+    public ResponseEntity<AuctionDto> getAuctionById(@PathVariable Long id) {
         Auction findAuction = auctionService.findById(id);
+        AuctionDto responseDto = AuctionDto.fromEntity(findAuction);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(findAuction);
+                .body(responseDto);
     }
     @PostMapping("/auction")
-    public ResponseEntity<Auction> addAuction(@RequestBody AuctionDto auctionDto) {
+    public ResponseEntity<AuctionDto> addAuction(@RequestBody AuctionDto auctionDto) {
         Auction addAuction = auctionService.save(auctionDto);
+        AuctionDto responseDto = AuctionDto.fromEntity(addAuction);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(addAuction);
+                .body(responseDto);
     }
     @PutMapping("/auction/{id}")
-    public ResponseEntity<Auction> updateAuction(@PathVariable Long id, @RequestBody AuctionDto auctionDto) {
+    public ResponseEntity<AuctionDto> updateAuction(@PathVariable Long id, @RequestBody AuctionDto auctionDto) {
         Auction updateAuction = auctionService.update(id, auctionDto);
+        AuctionDto responseDto = AuctionDto.fromEntity(updateAuction);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(updateAuction);
+                .body(responseDto);
     }
     @DeleteMapping("/auction/{id}")
     public ResponseEntity<Void> deleteAuction(@PathVariable Long id) {
