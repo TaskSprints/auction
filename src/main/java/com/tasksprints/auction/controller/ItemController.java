@@ -18,29 +18,29 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping("/items")
-    public ResponseEntity<?> getAllItems() {
+    public ResponseEntity<List<ItemDto>> getAllItems() {
         List<ItemDto> responseDtos = itemService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(responseDtos);
     }
     @GetMapping("/item/{id}")
-    public ResponseEntity<?> getItem(@PathVariable Long id) {
+    public ResponseEntity<ItemDto> getItem(@PathVariable Long id) {
         ItemDto responseDto = ItemDto.fromEntity(itemService.findById(id));
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
     @PostMapping("/item")
-    public ResponseEntity<?> addItem(@RequestBody ItemDto itemDto) {
+    public ResponseEntity<ItemDto> addItem(@RequestBody ItemDto itemDto) {
         Item savedItem = itemService.save(itemDto);
         ItemDto responseDto = ItemDto.fromEntity(savedItem);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
     @PutMapping("/item/{id}")
-    public ResponseEntity<?> updateItem(@PathVariable Long id, @RequestBody ItemDto itemDto) {
+    public ResponseEntity<ItemDto> updateItem(@PathVariable Long id, @RequestBody ItemDto itemDto) {
         Item updatedItem = itemService.update(id, itemDto);
         ItemDto responseDto = ItemDto.fromEntity(updatedItem);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
     @DeleteMapping("/item/{id}")
-    public ResponseEntity<?> deleteItem(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteItem(@PathVariable Long id) {
         itemService.delete(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
