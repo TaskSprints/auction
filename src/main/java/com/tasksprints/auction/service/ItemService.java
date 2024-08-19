@@ -3,6 +3,7 @@ package com.tasksprints.auction.service;
 import com.tasksprints.auction.domain.Item;
 import com.tasksprints.auction.dto.ItemDto;
 import com.tasksprints.auction.repository.ItemRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.List;
 public class ItemService {
     private final ItemRepository itemRepository;
 
+    @Transactional
     public Item save(ItemDto itemDto) {
         return itemRepository.save(itemDto.toEntity());
     }
@@ -26,6 +28,7 @@ public class ItemService {
         return itemRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("not found: " + id));
 
     }
+    @Transactional
     public Item update(Long id, ItemDto itemDto) {
         Item item = itemRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("not found: " + id));
         item.update(
@@ -35,6 +38,7 @@ public class ItemService {
         );
         return itemRepository.save(item);
     }
+    @Transactional
     public void delete(Long id) {
         itemRepository.deleteById(id);
     }

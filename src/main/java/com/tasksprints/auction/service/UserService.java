@@ -3,6 +3,7 @@ package com.tasksprints.auction.service;
 import com.tasksprints.auction.domain.User;
 import com.tasksprints.auction.dto.UserDto;
 import com.tasksprints.auction.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +13,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-
-    public User save(UserDto userDto) {
-        return userRepository.save(userDto.toEntity());
-    }
+    @Transactional
+    public User save(UserDto userDto) {return userRepository.save(userDto.toEntity());}
+    @Transactional
     public User update(Long id, UserDto userDto) {
         User user = userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("not found: " + id));
         user.update(userDto.getUsername(),
@@ -30,12 +30,11 @@ public class UserService {
     }
     public List<UserDto> findAll() {
         List<User> users = userRepository.findAll();
-
         return users.stream()
                 .map(UserDto::fromEntity )
                 .toList();
-
     }
+    @Transactional
     public void delete(Long id) {
         userRepository.deleteById(id);
     }
