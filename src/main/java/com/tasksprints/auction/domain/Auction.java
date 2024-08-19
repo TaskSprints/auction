@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class Auction {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY )
+    @Column(name = "auction_id")
     private Long id;
 
     @Column(nullable = false)
@@ -28,6 +29,16 @@ public class Auction {
 
     @Column()
     private String bidderId;
+
+    @Enumerated(EnumType.STRING)
+    private AuctionStatus status; //[UPCOMING, ONGOING, SOLD, UNSOLD, CANCELED]
+
+    @Enumerated(EnumType.STRING)
+    private AuctionCategory category; //[OPEN_PAID, OPEN_FREE, SEALED_BID]
+
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.ALL)
+    @JoinColumn(name = "item_id")
+    private Item item;
 
     public void update(LocalDateTime startTime, LocalDateTime endTime, Long startingBid, Long highestBid, String bidderId) {
         this.startTime = startTime;
