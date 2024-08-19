@@ -20,39 +20,29 @@ public class AuctionController {
     @GetMapping("/auctions")
     public ResponseEntity<List<AuctionDto>> getAllAuctions() {
         List<AuctionDto> auctions = auctionService.findAllAuctions();
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(auctions);
+        return ResponseEntity.status(HttpStatus.OK).body(auctions);
     }
     @GetMapping("/auction/{id}")
     public ResponseEntity<AuctionDto> getAuctionById(@PathVariable Long id) {
         Auction findAuction = auctionService.findById(id);
         AuctionDto responseDto = AuctionDto.fromEntity(findAuction);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
     @PostMapping("/auction")
     public ResponseEntity<AuctionDto> addAuction(@RequestBody AuctionDto auctionDto) {
         Auction addAuction = auctionService.save(auctionDto);
         AuctionDto responseDto = AuctionDto.fromEntity(addAuction);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(responseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
     @PutMapping("/auction/{id}")
     public ResponseEntity<AuctionDto> updateAuction(@PathVariable Long id, @RequestBody AuctionDto auctionDto) {
         Auction updateAuction = auctionService.update(id, auctionDto);
         AuctionDto responseDto = AuctionDto.fromEntity(updateAuction);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
     @DeleteMapping("/auction/{id}")
     public ResponseEntity<Void> deleteAuction(@PathVariable Long id) {
         auctionService.delete(id);
-        return ResponseEntity
-                .status(HttpStatus.NO_CONTENT)
-                .build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

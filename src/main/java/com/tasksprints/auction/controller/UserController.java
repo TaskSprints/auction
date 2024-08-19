@@ -19,35 +19,31 @@ public class UserController {
     @GetMapping("/users")
     public ResponseEntity<List<UserDto>> getAllUsers() {
         List<UserDto> responseDtos = userService.findAll();
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(responseDtos);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDtos);
     }
 
     @GetMapping("/user/{id}")
     public ResponseEntity<UserDto> getUser(@PathVariable Long id) {
         UserDto responseDto = UserDto.fromEntity(userService.findById(id));
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
     @PostMapping("/user")
     public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
         User savedUser = userService.save(userDto);
         UserDto responseDto = UserDto.fromEntity(savedUser);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(responseDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
     @PutMapping("/user/{id}")
     public ResponseEntity<UserDto> updateUser(@RequestBody UserDto userDto, @PathVariable Long id) {
         User updatedUser = userService.update(id, userDto);
         UserDto responseDto = UserDto.fromEntity(updatedUser);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(responseDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
     @DeleteMapping("/user/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.delete(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
 }
