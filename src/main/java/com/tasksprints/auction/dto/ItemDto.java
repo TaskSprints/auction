@@ -4,6 +4,8 @@ import com.tasksprints.auction.domain.Auction;
 import com.tasksprints.auction.domain.Item;
 import lombok.*;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,6 +16,7 @@ public class ItemDto {
     private String name;
     private String description;
     private String category;
+    private List<ItemImageDto> itemImages;
 
     public static ItemDto fromEntity(Item item) {
            return ItemDto.builder()
@@ -21,6 +24,9 @@ public class ItemDto {
                    .name(item.getName())
                    .description(item.getDescription())
                    .category(item.getCategory())
+                   .itemImages(item.getItemImages().stream()
+                           .map(ItemImageDto::fromEntity)
+                           .toList())
                    .build();
        }
     public Item toEntity() {
@@ -29,6 +35,9 @@ public class ItemDto {
                     .name(name)
                     .description(description)
                     .category(category)
+                    .itemImages(itemImages.stream()
+                            .map(ItemImageDto::toEntity)
+                            .toList())
                     .build();
         }
 }
