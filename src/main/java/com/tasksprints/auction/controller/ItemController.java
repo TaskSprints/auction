@@ -24,19 +24,19 @@ public class ItemController {
     }
     @GetMapping("/item/{id}")
     public ResponseEntity<ItemDto> getItem(@PathVariable Long id) {
-        ItemDto responseDto = ItemDto.fromEntity(itemService.findById(id));
+        ItemDto responseDto = itemService.fromEntity(itemService.findById(id));
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
     @PostMapping("/item")
     public ResponseEntity<ItemDto> addItem(@RequestBody ItemDto itemDto) {
         Item savedItem = itemService.save(itemDto);
-        ItemDto responseDto = ItemDto.fromEntity(savedItem);
+        ItemDto responseDto = itemService.fromEntity(savedItem);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
     @PutMapping("/item/{id}")
     public ResponseEntity<ItemDto> updateItem(@PathVariable Long id, @RequestBody ItemDto itemDto) {
         Item updatedItem = itemService.update(id, itemDto);
-        ItemDto responseDto = ItemDto.fromEntity(updatedItem);
+        ItemDto responseDto = itemService.fromEntity(updatedItem);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
     @DeleteMapping("/item/{id}")

@@ -17,25 +17,8 @@ public class AuctionDto {
     private Long startingBid;
     private Long highestBid;
     private String bidderId;
+    private Long itemId;
 
-    public static AuctionDto fromEntity(Auction auction) {
-        return AuctionDto.builder()
-                .id(auction.getId())
-                .startTime(auction.getStartTime())
-                .endTime(auction.getEndTime())
-                .startingBid(auction.getStartingBid())
-                .highestBid(auction.getHighestBid())
-                .bidderId(auction.getBidderId())
-                .build();
-    }
-    public Auction toEntity() {
-        return Auction.builder()
-                .id(id)
-                .startTime(startTime)
-                .endTime(endTime)
-                .startingBid(startingBid)
-                .highestBid(highestBid)
-                .bidderId(bidderId)
-                .build();
-    }
+
+
 }

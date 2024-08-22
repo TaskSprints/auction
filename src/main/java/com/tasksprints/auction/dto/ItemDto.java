@@ -18,26 +18,4 @@ public class ItemDto {
     private String category;
     private List<ItemImageDto> itemImages;
 
-    public static ItemDto fromEntity(Item item) {
-           return ItemDto.builder()
-                   .id(item.getId())
-                   .name(item.getName())
-                   .description(item.getDescription())
-                   .category(item.getCategory())
-                   .itemImages(item.getItemImages().stream()
-                           .map(ItemImageDto::fromEntity)
-                           .toList())
-                   .build();
-       }
-    public Item toEntity() {
-            return Item.builder()
-                    .id(id)
-                    .name(name)
-                    .description(description)
-                    .category(category)
-                    .itemImages(itemImages.stream()
-                            .map(ItemImageDto::toEntity)
-                            .toList())
-                    .build();
-        }
 }

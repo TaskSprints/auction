@@ -23,13 +23,13 @@ public class ItemImageController {
     }
     @GetMapping("/image/{imageId}")
     public ResponseEntity<ItemImageDto> getImage(@PathVariable Long itemId, @PathVariable Long imageId) {
-        ItemImageDto responseDto = ItemImageDto.fromEntity(itemImageService.findById(imageId));
+        ItemImageDto responseDto = itemImageService.fromEntity(itemImageService.findById(imageId));
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
     @PostMapping("/image")
     public ResponseEntity<ItemImageDto> addImage(@RequestBody ItemImageDto itemImageDto, @PathVariable Long itemId) {
         ItemImage savedItemImage = itemImageService.save(itemId, itemImageDto);
-        ItemImageDto responseDto = ItemImageDto.fromEntity(savedItemImage);
+        ItemImageDto responseDto = itemImageService.fromEntity(savedItemImage);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
 
     }
@@ -38,7 +38,7 @@ public class ItemImageController {
                                                     @PathVariable Long itemId,
                                                     @PathVariable Long imageId) {
         ItemImage updatedItemImage = itemImageService.update(itemId, imageId, itemImageDto);
-        ItemImageDto responseDto = ItemImageDto.fromEntity(updatedItemImage);
+        ItemImageDto responseDto = itemImageService.fromEntity(updatedItemImage);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
     @DeleteMapping("/image/{imageId}")

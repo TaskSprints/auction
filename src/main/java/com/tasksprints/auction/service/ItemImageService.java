@@ -6,6 +6,7 @@ import com.tasksprints.auction.dto.ItemImageDto;
 import com.tasksprints.auction.dto.UserDto;
 import com.tasksprints.auction.repository.ItemImageRepository;
 import com.tasksprints.auction.repository.ItemRepository;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,31 @@ public class ItemImageService {
     private final ItemRepository itemRepository;
     private final ItemImageRepository itemImageRepository;
 
+    public ItemImageDto fromEntity(ItemImage itemImage) {
+            return ItemImageDto.builder()
+                    .id(itemImage.getId())
+                    .url(itemImage.getUrl())
+                    .isPrimary(itemImage.getIsPrimary())
+                    .itemId(itemImage.getItem().getId())
+                    .build();
+        }
+
+    public ItemImage toEntity(ItemImageDto itemImageDto) {
+
+       Item item = itemRepository.findById(itemImageDto.getItemId()).orElseThrow(() -> new EntityNotFoundException("Item not found with id: " + itemImageDto.getItemId()));
+
+        return ItemImage.builder()
+                .id(itemImageDto.getId())
+                .url(itemImageDto.getUrl())
+                .isPrimary(itemImageDto.getIsPrimary())
+                .item(item)
+                .build();
+    }
+
     @Transactional
     public ItemImage save(Long itemId, ItemImageDto itemImageDto) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new IllegalArgumentException("not found: " + itemId));
-        ItemImage itemImage = itemImageDto.toEntity();
+        ItemImage itemImage = this.toEntity(itemImageDto);
         item.addItemImage(itemImage);
 
         return itemImageRepository.save(itemImage);
@@ -58,7 +80,7 @@ public class ItemImageService {
     public List<ItemImageDto> findAll() {
         List<ItemImage> itemImages = itemImageRepository.findAll();
         return itemImages.stream()
-                .map(ItemImageDto::fromEntity )
+                .map(this::fromEntity)
                 .toList();
     }
 }

@@ -25,19 +25,19 @@ public class AuctionController {
     @GetMapping("/auction/{id}")
     public ResponseEntity<AuctionDto> getAuctionById(@PathVariable Long id) {
         Auction findAuction = auctionService.findById(id);
-        AuctionDto responseDto = AuctionDto.fromEntity(findAuction);
+        AuctionDto responseDto = auctionService.fromEntity(findAuction);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
     @PostMapping("/auction")
     public ResponseEntity<AuctionDto> addAuction(@RequestBody AuctionDto auctionDto) {
         Auction addAuction = auctionService.save(auctionDto);
-        AuctionDto responseDto = AuctionDto.fromEntity(addAuction);
+        AuctionDto responseDto = auctionService.fromEntity(addAuction);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
     @PutMapping("/auction/{id}")
     public ResponseEntity<AuctionDto> updateAuction(@PathVariable Long id, @RequestBody AuctionDto auctionDto) {
         Auction updateAuction = auctionService.update(id, auctionDto);
-        AuctionDto responseDto = AuctionDto.fromEntity(updateAuction);
+        AuctionDto responseDto = auctionService.fromEntity(updateAuction);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
     @DeleteMapping("/auction/{id}")
