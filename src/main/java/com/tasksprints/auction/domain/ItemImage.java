@@ -23,7 +23,7 @@ public class ItemImage {
     @Column(nullable = false)
     private Boolean isPrimary;
 
-    @Column(nullable = false)
+    @Column()
     private LocalDateTime createdAt;
 
     @Column()

@@ -9,7 +9,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +20,9 @@ public class ItemService {
     private final ItemRepository itemRepository;
 
     public ItemDto fromEntity(Item item) {
-        List<ItemImageDto> itemImageDtos = item.getItemImages().stream()
+        List<ItemImageDto> itemImageDtos = Optional.ofNullable(item.getItemImages())
+                .orElse(Collections.emptyList())
+                .stream()
                     .map(itemImage -> ItemImageDto.builder()
                             .id(itemImage.getId())
                             .url(itemImage.getUrl())
@@ -50,15 +55,17 @@ public class ItemService {
                 .build();
 
 
-        List<ItemImage> itemImages = itemDto.getItemImages().stream()
-                                    .map(itemImageDto -> ItemImage.builder()
-                                            .id(itemImageDto.getId())
-                                            .url(itemImageDto.getUrl())
-                                            .isPrimary(itemImageDto.getIsPrimary())
-                                            .item(item)
-                                            .build()
-                                    )
-                                    .toList();
+        List<ItemImage> itemImages = Optional.ofNullable(itemDto.getItemImages())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(itemImageDto -> ItemImage.builder()
+                        .id(itemImageDto.getId())
+                        .url(itemImageDto.getUrl())
+                        .isPrimary(itemImageDto.getIsPrimary())
+                        .item(item)
+                        .build()
+                )
+                .toList();
 
         item.setItemImages(itemImages);
 
