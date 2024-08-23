@@ -45,12 +45,24 @@ public class Auction {
     @JoinColumn(name = "item_id")
     private Item item;
 
+    @OneToOne(mappedBy = "auction", fetch = FetchType.LAZY)
+    private Review review;
+
     public void update(LocalDateTime startTime, LocalDateTime endTime, Long startingBid, Long highestBid, String bidderId) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.startingBid = startingBid;
         this.highestBid = highestBid;
         this.bidderId = bidderId;
+    }
+
+    public void addReview(Review review) {
+        this.review = review;
+        review.setAuction(this);
+    }
+    public void removeReview(Review review) {
+        this.review = null;
+        review.setAuction(null);
     }
 
     /*
