@@ -11,7 +11,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -50,7 +52,7 @@ public class ItemImageService {
         return itemImageRepository.save(itemImage);
     }
     @Transactional
-    public ItemImage update(Long itemId, Long itemImageId, ItemImageDto itemImageDto) {
+    public ItemImage update(Long itemImageId, ItemImageDto itemImageDto) {
         /*
         연관관계가 매핑이 된 상태에서는 update할 때 명시적 함수가 불 필요?
         item과 itemImage는 매핑된 상태에서 itemImage만 수정하면 알아서 수정되니까??
@@ -77,10 +79,17 @@ public class ItemImageService {
     public ItemImage findById(Long itemImageId) {
         return itemImageRepository.findById(itemImageId).orElseThrow(() -> new IllegalArgumentException("not found: " + itemImageId));
     }
-    public List<ItemImageDto> findAll() {
-        List<ItemImage> itemImages = itemImageRepository.findAll();
+    public List<ItemImageDto> findAll(Long itemId) {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new IllegalArgumentException("not found: " + itemId));
+        List<ItemImage> itemImages = Optional.ofNullable(item.getItemImages())
+                                                 .orElse(Collections.emptyList());
+
         return itemImages.stream()
                 .map(this::fromEntity)
                 .toList();
+//        List<ItemImage> itemImages = itemImageRepository.findAll();
+//                        return itemImages.stream()
+//                                .map(this::fromEntity)
+//                                .toList();
     }
 }

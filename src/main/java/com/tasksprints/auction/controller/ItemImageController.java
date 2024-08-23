@@ -17,8 +17,8 @@ public class ItemImageController {
     private final ItemImageService itemImageService;
 
     @GetMapping("/images")
-    public ResponseEntity<List<ItemImageDto>> getAllImages() {
-        List<ItemImageDto> responseDtos = itemImageService.findAll();
+    public ResponseEntity<List<ItemImageDto>> getAllImages(Long itemId) {
+        List<ItemImageDto> responseDtos = itemImageService.findAll(itemId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDtos);
     }
     @GetMapping("/image/{imageId}")
@@ -35,9 +35,8 @@ public class ItemImageController {
     }
     @PutMapping("/image/{imageId}")
     public ResponseEntity<ItemImageDto> updateImage(@RequestBody ItemImageDto itemImageDto,
-                                                    @PathVariable Long itemId,
                                                     @PathVariable Long imageId) {
-        ItemImage updatedItemImage = itemImageService.update(itemId, imageId, itemImageDto);
+        ItemImage updatedItemImage = itemImageService.update(imageId, itemImageDto);
         ItemImageDto responseDto = itemImageService.fromEntity(updatedItemImage);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
