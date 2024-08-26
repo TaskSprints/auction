@@ -21,8 +21,8 @@ public class BidController {
     private final BidService bidService;
     @Operation(summary = "Get Bids", description = "특정 경매에 대한 모든 입찰을 조회한다.")
     @GetMapping("/bids")
-    public ResponseEntity<List<BidDto>> getAllBids(@PathVariable Long auctiondId) {
-        List<BidDto> responseDtos = bidService.findAllBids(auctiondId);
+    public ResponseEntity<List<BidDto>> getAllBids(@PathVariable Long auctionId) {
+        List<BidDto> responseDtos = bidService.findAllBids(auctionId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDtos);
     }
     @Operation(summary = "Get Bid", description = "특정 경매에 대한 특정 입찰을 조회한다.")
@@ -32,10 +32,11 @@ public class BidController {
         BidDto bidDto = bidService.fromEntity(bid);
         return ResponseEntity.status(HttpStatus.OK).body(bidDto);
     }
+//  특정 경매에 대한 입찰(auctionId,userId)
     @Operation(summary = "Add Bid", description = "특정 경매에 대해 입찰한다.")
-    @PostMapping("/bid")
-    public ResponseEntity<BidDto> addBid(@RequestBody BidDto bidDto) {
-        Bid bid = bidService.save(bidDto);
+    @PostMapping("/user/{userId}/bid")
+    public ResponseEntity<BidDto> addBid(@PathVariable Long auctionId, @PathVariable Long userId, @RequestBody BidDto bidDto) {
+        Bid bid = bidService.save(auctionId, userId, bidDto);
         BidDto responseDto = bidService.fromEntity(bid);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }

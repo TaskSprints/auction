@@ -11,7 +11,9 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -31,11 +33,11 @@ public class BidService {
 
         }
 
-    public  Bid toEntity(BidDto bidDto) {
-    Auction auction = auctionRepository.findById(bidDto.getAuctionId())
-           .orElseThrow(() -> new RuntimeException("Auction not found with id " + bidDto.getAuctionId()));
-    User user = userRepository.findById(bidDto.getUserId())
-           .orElseThrow(() -> new RuntimeException("User not found with id " + bidDto.getUserId()));
+    public Bid toEntity(Long auctionId, Long userId, BidDto bidDto) {
+        Auction auction = auctionRepository.findById(auctionId)
+                .orElseThrow(() -> new RuntimeException("Auction not found with id " + bidDto.getAuctionId()));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id " + bidDto.getUserId()));
         return Bid.builder()
                 .bidAmount(bidDto.getBidAmount())
                 .bidTime(bidDto.getBidTime())
@@ -44,8 +46,9 @@ public class BidService {
                 .build();
     }
 
-    public List<BidDto> findAllBids() {
-        List<Bid> bids = bidRepository.findAll();
+    public List<BidDto> findAllBids(Long auctionId) {
+        Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new IllegalArgumentException("Auction not found with id " + auctionId));
+        List<Bid> bids = Optional.ofNullable(auction.getBids()).orElse(Collections.emptyList());
         return bids.stream()
                 .map(this::fromEntity)
                 .toList();
@@ -57,8 +60,8 @@ public class BidService {
     //  어떤 경매에 대해서 bid 신청
     // dto는 id 값들을 갖고 있고, dto->entity 과정에서 auction과 user와의 매핑이 됨
     @Transactional
-    public Bid save(BidDto bidDto) {
-        Bid bid = this.toEntity(bidDto);
+    public Bid save(Long auctionId, Long userId, BidDto bidDto) {
+        Bid bid = this.toEntity(auctionId, userId, bidDto);
         return bidRepository.save(bid);
     }
 
