@@ -15,8 +15,8 @@ public class AuctionDto {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private Long startingBid;
-    private Long highestBid;
-    private String bidderId;
+    private Long highestBidAmount;
+    private Long highestBidId;
     private Long itemId;
 
 
