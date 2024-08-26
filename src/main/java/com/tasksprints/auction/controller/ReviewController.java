@@ -4,6 +4,8 @@ import com.tasksprints.auction.domain.Review;
 import com.tasksprints.auction.dto.ReviewDto;
 import com.tasksprints.auction.service.AuctionService;
 import com.tasksprints.auction.service.ReviewService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/auction/{auctionId}")
 @RequiredArgsConstructor
+@Tag(name = "Review", description = "Review API")
 public class ReviewController {
     private final ReviewService reviewService;
 
@@ -24,21 +27,22 @@ public class ReviewController {
 //        return ResponseEntity.status(HttpStatus.OK).body(reviewDtos);
 //    }
 
-    //auction을 통해 review를 조회
+    @Operation(summary = "Get Review by AuctionID", description = "특정 경매에 대한 리뷰를 조회한다.")
     @GetMapping("/review")
     public ResponseEntity<ReviewDto> getReviewByAuctionId(@PathVariable Long auctionId) {
         Review review = reviewService.findByAuctionId(auctionId);
         ReviewDto reviewDto = reviewService.fromEntity(review);
         return ResponseEntity.status(HttpStatus.OK).body(reviewDto);
     }
-    //auction에 review를 추가
+    @Operation(summary = "Add Review to AuctionID", description = "특정 경매에 대한 리뷰를 조회한다.")
     @PostMapping("/review")
     public ResponseEntity<ReviewDto> addReview(@PathVariable Long auctionId, @RequestBody ReviewDto reviewDto) {
         Review review = reviewService.save(auctionId, reviewDto);
         ReviewDto responseDto = reviewService.fromEntity(review);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
-    //auction에 있는 review를 수정
+
+    @Operation(summary = "Update Review to AuctionID", description = "특정 경매에 대한 리뷰를 수정한다.")
     @PutMapping("/review/{reviewId}")
     public ResponseEntity<ReviewDto> updateReview(@PathVariable Long reviewId, @RequestBody ReviewDto reviewDto) {
         Review updatedReview = reviewService.update(reviewId, reviewDto);
@@ -46,7 +50,7 @@ public class ReviewController {
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
 
-    //auction에 있는 리뷰를 삭제
+    @Operation(summary = "Delete Review by AuctionID and ReviewID", description = "특정 경매에 대한 리뷰를 삭제한다.")
     @DeleteMapping("/review/{reviewId}")
     public ResponseEntity<Void> deleteReview(@PathVariable Long auctionId, @PathVariable Long reviewId) {
         reviewService.delete(auctionId, reviewId);
