@@ -27,12 +27,14 @@ public class AuctionController {
         return ResponseEntity.status(HttpStatus.OK).body(auctions);
     }
     @Operation(summary = "Get Auction", description = "특정 경매를 조회한다.")
-    @GetMapping("/auction/{id}")
-    public ResponseEntity<AuctionDto> getAuctionById(@PathVariable Long id) {
-        Auction findAuction = auctionService.findById(id);
+    @GetMapping("/auction/{auctionId}")
+    public ResponseEntity<AuctionDto> getAuctionById(@PathVariable Long auctionId) {
+        Auction findAuction = auctionService.findById(auctionId);
         AuctionDto responseDto = auctionService.fromEntity(findAuction);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
+//  어떤 상품에 대한 경매?
+//  DTO에 itemId가 있음
     @Operation(summary = "Add Auction", description = "경매를 추가한다.")
     @PostMapping("/auction")
     public ResponseEntity<AuctionDto> addAuction(@RequestBody AuctionDto auctionDto) {
@@ -41,16 +43,16 @@ public class AuctionController {
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
     @Operation(summary = "Update Auction", description = "특정 경매를 수정한다.")
-    @PutMapping("/auction/{id}")
-    public ResponseEntity<AuctionDto> updateAuction(@PathVariable Long id, @RequestBody AuctionDto auctionDto) {
-        Auction updateAuction = auctionService.update(id, auctionDto);
+    @PutMapping("/auction/{auctionId}")
+    public ResponseEntity<AuctionDto> updateAuction(@PathVariable Long auctionId, @RequestBody AuctionDto auctionDto) {
+        Auction updateAuction = auctionService.update(auctionId, auctionDto);
         AuctionDto responseDto = auctionService.fromEntity(updateAuction);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
     @Operation(summary = "Delete Auction", description = "특정 경매를 삭제한다.")
-    @DeleteMapping("/auction/{id}")
-    public ResponseEntity<Void> deleteAuction(@PathVariable Long id) {
-        auctionService.delete(id);
+    @DeleteMapping("/auction/{auctionId}")
+    public ResponseEntity<Void> deleteAuction(@PathVariable Long auctionId) {
+        auctionService.delete(auctionId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
