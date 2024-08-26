@@ -27,8 +27,8 @@ public class AuctionService {
                     .itemId(auction.getId())
                     .build();
         }
-    public Auction toEntity(AuctionDto auctionDto) {
-        Item item = itemRepository.findById(auctionDto.getItemId()).orElseThrow(() -> new RuntimeException("Auction not found with id " + auctionDto.getItemId()));
+    public Auction toEntity(Long itemId, AuctionDto auctionDto) {
+        Item item = itemRepository.findById(itemId).orElseThrow(() -> new RuntimeException("Auction not found with id " + auctionDto.getItemId()));
         return Auction.builder()
                     .id(auctionDto.getId())
                     .startTime(auctionDto.getStartTime())
@@ -50,8 +50,8 @@ public class AuctionService {
         return auctionRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("not found: " + id));
     }
     @Transactional
-    public Auction save(AuctionDto auctionDto) {
-        Auction auction = this.toEntity(auctionDto);
+    public Auction save(Long itemId, AuctionDto auctionDto) {
+        Auction auction = this.toEntity(itemId, auctionDto);
         return auctionRepository.save(auction);
     }
     @Transactional

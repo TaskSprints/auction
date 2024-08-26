@@ -33,12 +33,13 @@ public class AuctionController {
         AuctionDto responseDto = auctionService.fromEntity(findAuction);
         return ResponseEntity.status(HttpStatus.OK).body(responseDto);
     }
-//  어떤 상품에 대한 경매?
+
+    //  어떤 상품에 대한 경매?
 //  DTO에 itemId가 있음
     @Operation(summary = "Add Auction", description = "경매를 추가한다.")
-    @PostMapping("/auction")
-    public ResponseEntity<AuctionDto> addAuction(@RequestBody AuctionDto auctionDto) {
-        Auction addAuction = auctionService.save(auctionDto);
+    @PostMapping("/auction/item/{itemId}")
+    public ResponseEntity<AuctionDto> addAuction(@PathVariable Long itemId, @RequestBody AuctionDto auctionDto) {
+        Auction addAuction = auctionService.save(itemId, auctionDto);
         AuctionDto responseDto = auctionService.fromEntity(addAuction);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
