@@ -19,20 +19,19 @@ import java.util.List;
 @Tag(name = "Bid", description = "Bid API")
 public class BidController {
     private final BidService bidService;
-    @Operation(summary = "Get Bids", description = "모든 입찰을 조회한다.")
+    @Operation(summary = "Get Bids", description = "특정 경매에 대한 모든 입찰을 조회한다.")
     @GetMapping("/bids")
-    public ResponseEntity<List<BidDto>> getAllBids() {
-        List<BidDto> responseDtos = bidService.findAllBids();
+    public ResponseEntity<List<BidDto>> getAllBids(@PathVariable Long auctiondId) {
+        List<BidDto> responseDtos = bidService.findAllBids(auctiondId);
         return ResponseEntity.status(HttpStatus.OK).body(responseDtos);
     }
-    @Operation(summary = "Get Bid", description = "특정 입찰을 조회한다.")
+    @Operation(summary = "Get Bid", description = "특정 경매에 대한 특정 입찰을 조회한다.")
     @GetMapping("/bid/{bidId}")
     public ResponseEntity<BidDto> getBid(@PathVariable Long bidId) {
         Bid bid = bidService.findById(bidId);
         BidDto bidDto = bidService.fromEntity(bid);
         return ResponseEntity.status(HttpStatus.OK).body(bidDto);
     }
-//  바꿔
     @Operation(summary = "Add Bid", description = "특정 경매에 대해 입찰한다.")
     @PostMapping("/bid")
     public ResponseEntity<BidDto> addBid(@RequestBody BidDto bidDto) {
