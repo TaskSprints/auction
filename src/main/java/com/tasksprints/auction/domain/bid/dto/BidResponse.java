@@ -17,14 +17,16 @@ public class BidResponse {
     String name;
     Long auctionId;
     BigDecimal amount;
+    String uuid;
 
     public static BidResponse of(Bid bid) {
         return BidResponse.builder()
-            .userId(bid.getUser().getId())
-            .name(bid.getUser().getName())
-            .auctionId(bid.getAuction().getId())
-            .amount(bid.getAmount())
-            .build();
+                .userId(bid.getUser().getId())
+                .name(bid.getUser().getName())
+                .auctionId(bid.getAuction().getId())
+                .uuid(bid.getUuid())
+                .amount(bid.getAmount())
+                .build();
         /** 아이템 목록 추가**/
     }
 }
