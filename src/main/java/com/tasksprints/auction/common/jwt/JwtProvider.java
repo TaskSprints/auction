@@ -38,12 +38,19 @@ public class JwtProvider {
 
         Date now = new Date(System.currentTimeMillis());
 
-        Claims claims = Jwts.parser()
+        Claims claims = getClaims(token);
+
+        return !claims.getExpiration().before(now);
+    }
+
+    /**
+     * 토큰에서 추출한 정보를 반환합니다.
+     * */
+    public Claims getClaims(String token) {
+        return Jwts.parser()
             .setSigningKey(JwtUtil.encodeSecretKey(jwtProperties.getSecretKey()))
             .parseClaimsJws(token)
             .getBody();
-
-        return !claims.getExpiration().before(now);
     }
 
 
