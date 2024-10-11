@@ -20,7 +20,6 @@ public class JwtProvider {
      * */
     public String createAccessToken(Long userId) {
 
-
         Date now = new Date(System.currentTimeMillis());
 
         return Jwts.builder()
@@ -28,9 +27,25 @@ public class JwtProvider {
             .claim("userId", userId)
             .setIssuedAt(now)
             .setExpiration(new Date(now.getTime() + jwtProperties.getExpireMs()))
-            .signWith(SignatureAlgorithm.HS256, JwtUtil.encodeSecretKey((jwtProperties.getSecretKey())))
+            .signWith(SignatureAlgorithm.HS256, JwtUtil.encodeSecretKey(jwtProperties.getSecretKey()))
             .compact();
     }
+
+    /**
+     * 토큰이 유효한지 검증합니다.
+     * */
+    public boolean verifyToken(String token) {
+
+        Date now = new Date(System.currentTimeMillis());
+
+        Claims claims = Jwts.parser()
+            .setSigningKey(JwtUtil.encodeSecretKey(jwtProperties.getSecretKey()))
+            .parseClaimsJws(token)
+            .getBody();
+
+        return !claims.getExpiration().before(now);
+    }
+
 
     /**
      * TODO:
