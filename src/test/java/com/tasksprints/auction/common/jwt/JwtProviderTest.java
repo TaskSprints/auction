@@ -12,7 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -54,5 +56,13 @@ class JwtProviderTest {
         Assertions.assertThrows(ExpiredJwtException.class,
             () -> { jwtProvider.verifyToken(token); },
             "토큰이 즉시 만료되어야 합니다.");
+    }
+
+    @Test
+    @DisplayName("디코딩 된 페이로드 정확성 테스트")
+    void getClaims() {
+        String token = jwtProvider.createAccessToken(1L);
+        Long decodedUserId = jwtProvider.getClaims(token).get("userId", Long.class);
+        assertThat(decodedUserId).isEqualTo(1L);
     }
 }
