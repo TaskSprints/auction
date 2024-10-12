@@ -32,6 +32,21 @@ public class JwtProvider {
     }
 
     /**
+     * refresh token 을 생성합니다.
+     * */
+    public String createRefreshToken() {
+
+        Date now = new Date(System.currentTimeMillis());
+
+        return Jwts.builder()
+            .setIssuer(jwtProperties.getIssuer())
+            .setIssuedAt(now)
+            .setExpiration(new Date(now.getTime() + jwtProperties.getRefreshExpireMs()))
+            .signWith(SignatureAlgorithm.HS256, JwtUtil.encodeSecretKey(jwtProperties.getSecretKey()))
+            .compact();
+    }
+
+    /**
      * 토큰이 유효한지 검증합니다.
      * */
     public boolean verifyToken(String token) {
