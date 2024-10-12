@@ -15,7 +15,6 @@ public class JwtProvider {
     private final JwtProperties jwtProperties;
 
     /**
-     * TODO: createToken 으로 변경 -> refreshToken 확장성 고려
      * accessToken 을 생성합니다.
      * */
     public String createAccessToken(Long userId) {
@@ -32,7 +31,7 @@ public class JwtProvider {
     }
 
     /**
-     * refresh token 을 생성합니다.
+     * refreshToken 을 생성합니다.
      * */
     public String createRefreshToken() {
 
@@ -67,12 +66,4 @@ public class JwtProvider {
             .parseClaimsJws(token)
             .getBody();
     }
-
-
-    /**
-     * TODO:
-     *  1. Claims 리팩토링
-     *  2. 토큰 종류에 따른 expire 시간 다른 반환
-     *      - claim 길이 유무로 판단
-     * */
 }
