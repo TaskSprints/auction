@@ -16,6 +16,9 @@ public class JwtProperties {
     @Value("${jwt.expire-ms}")
     private Long expireMs;
 
+    @Value("${jwt.expire-ms}")
+    private Long refreshExpireMs;
+
     @Value("${jwt.issuer}")
     private String issuer;
 
