@@ -22,20 +22,20 @@ class JwtProviderTest {
     @InjectMocks
     private JwtProvider jwtProvider;
 
-    private final Long validExpireMs = 36000000L;
-    private final Long refreshExpireMs = 72000000L;
-    private final Long expiredExpireMs = 0L;
-    private final String issuer = "testIssuer";
-    private final String secretKey = "testSecretKey";
+    private final Long VALID_EXPIRE_MS = 36000000L;
+    private final Long REFRESH_EXPIRE_MS = 72000000L;
+    private final Long EXPIRED_EXPIRE_MS = 0L;
+    private final String ISSUER = "testIssuer";
+    private final String SECRET_KEY = "testSecretKey";
 
 
     @BeforeEach
     public void setUp() {
-        when(jwtProperties.getIssuer()).thenReturn(issuer);
-        when(jwtProperties.getSecretKey()).thenReturn(secretKey);
+        when(jwtProperties.getIssuer()).thenReturn(ISSUER);
+        when(jwtProperties.getSecretKey()).thenReturn(SECRET_KEY);
     }
 
-    private void stubExpiration(Long expireMs) {
+    private void stubAccessTokenExpiration(Long expireMs) {
         when(jwtProperties.getExpireMs()).thenReturn(expireMs);
     }
 
@@ -46,7 +46,7 @@ class JwtProviderTest {
     @Test
     @DisplayName("access token 발급 테스트")
     void createAccessToken() {
-        stubExpiration(validExpireMs);
+        stubAccessTokenExpiration(VALID_EXPIRE_MS);
 
         String token = jwtProvider.createAccessToken(1L);
 
@@ -56,7 +56,7 @@ class JwtProviderTest {
     @Test
     @DisplayName("refresh token 발급 테스트")
     void createRefreshToken() {
-        stubRefreshTokenExpiration(refreshExpireMs);
+        stubRefreshTokenExpiration(REFRESH_EXPIRE_MS);
         String token = jwtProvider.createRefreshToken();
         assertNotNull(token, "refresh token 이 발급되어야 합니다.");
     }
@@ -64,7 +64,7 @@ class JwtProviderTest {
     @Test
     @DisplayName("유효한 토큰 테스트")
     void verifyToken_valid() {
-        stubExpiration(validExpireMs);
+        stubAccessTokenExpiration(VALID_EXPIRE_MS);
 
         String token = jwtProvider.createAccessToken(1L);
 
@@ -74,7 +74,7 @@ class JwtProviderTest {
     @Test
     @DisplayName("만료된 토큰 테스트")
     void verifyToken_expired() {
-        stubExpiration(expiredExpireMs);
+        stubAccessTokenExpiration(EXPIRED_EXPIRE_MS);
 
         String token = jwtProvider.createAccessToken(1L);
 
@@ -86,7 +86,7 @@ class JwtProviderTest {
     @Test
     @DisplayName("디코딩 된 페이로드 정확성 테스트")
     void getClaims() {
-        stubExpiration(validExpireMs);
+        stubAccessTokenExpiration(VALID_EXPIRE_MS);
 
         String token = jwtProvider.createAccessToken(1L);
         Long decodedUserId = jwtProvider.getClaims(token).get("userId", Long.class);
