@@ -23,6 +23,7 @@ class JwtProviderTest {
     private JwtProvider jwtProvider;
 
     private final Long validExpireMs = 36000000L;
+    private final Long refreshExpireMs = 72000000L;
     private final Long expiredExpireMs = 0L;
     private final String issuer = "testIssuer";
     private final String secretKey = "testSecretKey";
@@ -38,6 +39,10 @@ class JwtProviderTest {
         when(jwtProperties.getExpireMs()).thenReturn(expireMs);
     }
 
+    private void stubRefreshTokenExpiration(Long expireMs) {
+        when(jwtProperties.getRefreshExpireMs()).thenReturn(expireMs);
+    }
+
     @Test
     @DisplayName("access token 발급 테스트")
     void createAccessToken() {
@@ -46,6 +51,14 @@ class JwtProviderTest {
         String token = jwtProvider.createAccessToken(1L);
 
         assertNotNull(token, "access token 이 발급되어야 합니다.");
+    }
+
+    @Test
+    @DisplayName("refresh token 발급 테스트")
+    void createRefreshToken() {
+        stubRefreshTokenExpiration(refreshExpireMs);
+        String token = jwtProvider.createRefreshToken();
+        assertNotNull(token, "refresh token 이 발급되어야 합니다.");
     }
 
     @Test
