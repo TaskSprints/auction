@@ -19,20 +19,23 @@ public class JwtProvider {
      * refreshToken 과 accessToken 을 생성하고
      * 생성된 토큰을 반환합니다.
      * */
-    public JwtResponse generateToken(Long userId) {
-            return JwtResponse.of(createAccessToken(userId), createRefreshToken());
+    public JwtResponse generateToken(Long userId, String userRole) {
+            return JwtResponse.of(
+                createAccessToken(userId, userRole),
+                createRefreshToken());
     }
 
     /**
      * accessToken 을 생성합니다.
      * */
-    public String createAccessToken(Long userId) {
+    public String createAccessToken(Long userId, String userRole) {
 
         Date now = new Date(System.currentTimeMillis());
 
         return Jwts.builder()
             .setIssuer(jwtProperties.getIssuer())
             .claim("userId", userId)
+            .claim("userRole", userRole)
             .setIssuedAt(now)
             .setExpiration(new Date(now.getTime() + jwtProperties.getExpireMs()))
             .signWith(SignatureAlgorithm.HS256, JwtUtil.encodeSecretKey(jwtProperties.getSecretKey()))

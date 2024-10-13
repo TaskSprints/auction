@@ -47,7 +47,7 @@ class JwtProviderTest {
     @Test
     @DisplayName("token generator 을 통한 access token, refresh token 발급 테스트")
     void generateToken() {
-        JwtResponse jwtResponse = jwtProvider.generateToken(1L);
+        JwtResponse jwtResponse = jwtProvider.generateToken(1L, "admin");
 
         assertNotNull(jwtResponse.getAccessToken(), "access token 이 발급되어야 합니다.");
         assertNotNull(jwtResponse.getRefreshToken(), "refresh token 이 발급되어야 합니다.");
@@ -58,7 +58,7 @@ class JwtProviderTest {
     void createAccessToken() {
         stubAccessTokenExpiration(VALID_EXPIRE_MS);
 
-        String token = jwtProvider.createAccessToken(1L);
+        String token = jwtProvider.createAccessToken(1L, "admin");
 
         assertNotNull(token, "access token 이 발급되어야 합니다.");
     }
@@ -76,7 +76,7 @@ class JwtProviderTest {
     void verifyToken_valid() {
         stubAccessTokenExpiration(VALID_EXPIRE_MS);
 
-        String token = jwtProvider.createAccessToken(1L);
+        String token = jwtProvider.createAccessToken(1L, "admin");
 
         Assertions.assertTrue(jwtProvider.verifyToken(token));
     }
@@ -86,7 +86,7 @@ class JwtProviderTest {
     void verifyToken_expired() {
         stubAccessTokenExpiration(EXPIRED_EXPIRE_MS);
 
-        String token = jwtProvider.createAccessToken(1L);
+        String token = jwtProvider.createAccessToken(1L, "admin");
 
         Assertions.assertThrows(ExpiredJwtException.class,
             () -> { jwtProvider.verifyToken(token); },
@@ -98,9 +98,11 @@ class JwtProviderTest {
     void getClaims() {
         stubAccessTokenExpiration(VALID_EXPIRE_MS);
 
-        String token = jwtProvider.createAccessToken(1L);
+        String token = jwtProvider.createAccessToken(1L, "admin");
         Long decodedUserId = jwtProvider.getClaims(token).get("userId", Long.class);
+        String decodedUserRole = jwtProvider.getClaims(token).get("userRole", String.class);
 
         assertThat(decodedUserId).isEqualTo(1L);
+        assertThat(decodedUserRole).isEqualTo("admin");
     }
 }
