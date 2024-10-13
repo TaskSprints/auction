@@ -1,5 +1,6 @@
 package com.tasksprints.auction.common.jwt;
 
+import com.tasksprints.auction.common.jwt.dto.response.JwtResponse;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -13,6 +14,14 @@ import java.util.Date;
 public class JwtProvider {
 
     private final JwtProperties jwtProperties;
+
+    /**
+     * refreshToken 과 accessToken 을 생성하고
+     * 생성된 토큰을 반환합니다.
+     * */
+    public JwtResponse generateToken(Long userId) {
+            return JwtResponse.of(createAccessToken(userId), createRefreshToken());
+    }
 
     /**
      * accessToken 을 생성합니다.
