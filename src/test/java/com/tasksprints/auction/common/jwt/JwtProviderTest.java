@@ -1,5 +1,6 @@
 package com.tasksprints.auction.common.jwt;
 
+import com.tasksprints.auction.common.jwt.dto.response.JwtResponse;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,15 @@ class JwtProviderTest {
 
     private void stubRefreshTokenExpiration(Long expireMs) {
         when(jwtProperties.getRefreshExpireMs()).thenReturn(expireMs);
+    }
+
+    @Test
+    @DisplayName("token generator 을 통한 access token, refresh token 발급 테스트")
+    void generateToken() {
+        JwtResponse jwtResponse = jwtProvider.generateToken(1L);
+
+        assertNotNull(jwtResponse.getAccessToken(), "access token 이 발급되어야 합니다.");
+        assertNotNull(jwtResponse.getRefreshToken(), "refresh token 이 발급되어야 합니다.");
     }
 
     @Test
