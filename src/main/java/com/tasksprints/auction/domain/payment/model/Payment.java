@@ -31,8 +31,9 @@ public class Payment extends BaseEntityWithUpdate {
     @Column(nullable = false)
     private String orderName;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    private Wallet wallet;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "wallet_id")
+    private Wallet wallet;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -51,5 +52,8 @@ public class Payment extends BaseEntityWithUpdate {
     @Column(nullable = true)
     private String cancelReason;
 
-
+    public void addWallet(Wallet wallet) {
+        this.wallet = wallet;
+        wallet.addPayment(this);
+    }
 }
