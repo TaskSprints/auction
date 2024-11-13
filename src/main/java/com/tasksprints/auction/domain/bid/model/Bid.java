@@ -40,6 +40,7 @@ public class Bid extends BaseEntity {
     public static Bid create(BigDecimal amount, User user, Auction auction) {
         Bid newBid = Bid.builder()
             .amount(amount)
+            .uuid(UUID.randomUUID().toString())
             .build();
 
         newBid.addUserAndAuction(user, auction);
