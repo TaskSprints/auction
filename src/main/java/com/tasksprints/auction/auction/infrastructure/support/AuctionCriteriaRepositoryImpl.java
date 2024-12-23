@@ -110,7 +110,6 @@ public class AuctionCriteriaRepositoryImpl implements AuctionCriteriaRepository 
                 case "bidsDesc" -> auction.bids.size().desc();
                 case "endTimeASC" -> auction.endTime.asc();
                 case "startTimeASC" -> auction.startTime.asc();
-                case "viewCountDESC" -> auction.viewCount.desc();
 
                 default -> null;
             };

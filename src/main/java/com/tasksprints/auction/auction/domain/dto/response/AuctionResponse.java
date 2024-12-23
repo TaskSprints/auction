@@ -22,7 +22,6 @@ public class AuctionResponse {
     private String category;
     private String status;
     private BigDecimal startingBid;
-    private Long viewCount;
     private Long sellerId;
     private String sellerNickName;
 
@@ -37,7 +36,6 @@ public class AuctionResponse {
         private String category;
         private String status;
         private BigDecimal startingBid;
-        private Long viewCount;
         private Long sellerId;
         private String sellerNickName;
         private Long productId;
@@ -53,7 +51,6 @@ public class AuctionResponse {
                 .category(auction.getAuctionCategory().name())
                 .status(auction.getAuctionStatus().name())
                 .startingBid(auction.getStartingBid())
-                .viewCount(auction.getViewCount())
                 .sellerId(auction.getSeller() != null ? auction.getSeller().getId() : null)
                 .sellerNickName(auction.getSeller() != null ? auction.getSeller().getNickName() : null)
                 .productId(auction.getProduct() != null ? auction.getProduct().getId() : null)
@@ -74,7 +71,6 @@ public class AuctionResponse {
             .category(auction.getAuctionCategory().name())
             .status(auction.getAuctionStatus().name())
             .startingBid(auction.getStartingBid())
-            .viewCount(auction.getViewCount())
             .sellerId(auction.getSeller().getId())
             .sellerNickName(auction.getSeller().getNickName())
             .build();

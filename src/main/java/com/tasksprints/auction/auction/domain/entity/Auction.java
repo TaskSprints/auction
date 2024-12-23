@@ -54,9 +54,6 @@ public class Auction extends BaseEntity {
     @Builder.Default
     private List<Bid> bids = new ArrayList<>();
 
-    @Column(nullable = false)
-    private long viewCount = 0L;
-
     public static Auction create(LocalDateTime startTime, LocalDateTime endTime, BigDecimal startingBid, AuctionCategory auctionCategory, AuctionStatus auctionStatus, User seller) {
         Auction newAuction = Auction.builder()
             .startTime(startTime)
@@ -77,10 +74,6 @@ public class Auction extends BaseEntity {
     public void addUser(User seller) {
         seller.addAuction(this);
         this.seller = seller;
-    }
-
-    public void incrementViewCount() {
-        this.viewCount += 1;
     }
 
 
