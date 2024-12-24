@@ -19,7 +19,13 @@ public class ProductImage {
     @Getter
     private String imageUrl;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Product product;
 
+    public void addProduct(Product product) {
+        this.product = product;
+    }
 //    @ColumnDefault("false")
 //    private Boolean isPrime;
 

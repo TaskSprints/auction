@@ -31,16 +31,16 @@ public class Product extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ProductCategory category; //제품의 Category
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "owner_id")
     private User owner;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     //mappedby
     @JoinColumn(name = "auction_id")
     private Auction auction;
 
-    @OneToMany
+    @OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @Builder.Default
     private List<ProductImage> productImageList = new ArrayList<>();
 
@@ -62,7 +62,9 @@ public class Product extends BaseEntity {
     }
 
     public void initProductImageList(List<ProductImage> productImageList) {
+        if (productImageList == null) return;
         this.productImageList = productImageList;
+        productImageList.forEach(image -> image.addProduct(this));
     }
 
     public void addOwnerAndAuction(User owner, Auction auction) {

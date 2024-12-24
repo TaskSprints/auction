@@ -1,6 +1,5 @@
-package com.tasksprints.auction.domain.auction.repository;
+package com.tasksprints.auction.auction.infrastructure;
 
-import com.tasksprints.auction.auction.infrastructure.AuctionRepository;
 import com.tasksprints.auction.common.config.QueryDslConfig;
 import com.tasksprints.auction.auction.domain.dto.request.AuctionRequest;
 import com.tasksprints.auction.auction.domain.entity.Auction;
@@ -24,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -86,7 +86,7 @@ public class AuctionRepositoryTest {
             user,
             auction,
             productCategory,
-            null
+            new ArrayList<>()
         );
     }
 

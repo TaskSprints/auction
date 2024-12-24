@@ -46,11 +46,11 @@ public class Auction extends BaseEntity {
     @ToString.Exclude
     private User seller;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @Builder.Default
     private Product product = null;
 
-    @OneToMany
+    @OneToMany(fetch = FetchType.LAZY)
     @Builder.Default
     private List<Bid> bids = new ArrayList<>();
 
