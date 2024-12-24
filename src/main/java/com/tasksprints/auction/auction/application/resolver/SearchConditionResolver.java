@@ -26,7 +26,6 @@ public class SearchConditionResolver implements HandlerMethodArgumentResolver {
     @Override
     public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
                                   NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
-
         // QueryString에서 값을 추출
         String auctionCategory = webRequest.getParameter("auctionCategory");
         String productCategory = webRequest.getParameter("productCategory");
@@ -45,6 +44,12 @@ public class SearchConditionResolver implements HandlerMethodArgumentResolver {
         BigDecimal parsedMaxPrice = maxPrice != null ? new BigDecimal(maxPrice) : null;
         AuctionStatus parsedAuctionStatus = auctionStatus != null ? AuctionStatus.fromDisplayName(auctionStatus) : null;
 
+        //값 검증(비즈니스 로직이 아닌 값 유효성 검증은 resolver가 담당)
+        validateBothTimesProvided(parsedStartTime, parsedEndTime);
+        validateIsStartBeforeEnd(parsedStartTime, parsedEndTime);
+        validateMinLessThanMax(parsedMinPrice, parsedMaxPrice);
+
+
         // SearchCondition 객체 생성 및 반환
         return new AuctionRequest.SearchCondition(
             parsedAuctionCategory,
@@ -56,5 +61,27 @@ public class SearchConditionResolver implements HandlerMethodArgumentResolver {
             parsedAuctionStatus,
             sortBy
         );
+    }
+
+    private void validateMinLessThanMax(BigDecimal parsedMinPrice, BigDecimal parsedMaxPrice) {
+        if (parsedMinPrice != null && parsedMaxPrice != null) {
+            if (parsedMinPrice.compareTo(parsedMaxPrice) > 0) {
+                throw new IllegalArgumentException("minPrice cannot be greater than maxPrice.");
+            }
+        }
+    }
+
+    private void validateIsStartBeforeEnd(LocalDateTime parsedStartTime, LocalDateTime parsedEndTime) {
+        if (parsedStartTime != null && parsedEndTime != null) {
+            if (parsedStartTime.isAfter(parsedEndTime)) {
+                throw new IllegalArgumentException("startTime cannot be after endTime.");
+            }
+        }
+    }
+
+    private void validateBothTimesProvided(LocalDateTime parsedStartTime, LocalDateTime parsedEndTime) {
+        if ((parsedStartTime == null && parsedEndTime != null) || (parsedStartTime != null && parsedEndTime == null)) {
+            throw new IllegalArgumentException("Both startTime and endTime must be provided together.");
+        }
     }
 }
