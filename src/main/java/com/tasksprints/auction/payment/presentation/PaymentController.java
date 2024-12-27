@@ -8,6 +8,8 @@ import com.tasksprints.auction.payment.domain.dto.response.PaymentResponse;
 import com.tasksprints.auction.payment.exception.InvalidSessionException;
 import com.tasksprints.auction.payment.exception.PaymentDataMismatchException;
 import com.tasksprints.auction.payment.application.service.PaymentService;
+import com.tasksprints.auction.payment.exception.RedisKeyNotFoundException;
+import com.tasksprints.auction.payment.infrastructure.redis.RedisService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpSession;
@@ -18,25 +20,31 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/payment")
 public class PaymentController {
     private final PaymentService paymentService;
+    private final RedisService redisService;
 
     @PostMapping("/prepare")
     @Operation(summary = "Temporarily stores the payment element", description = "Save orderID and amount in session")
     @ApiResponse(responseCode = "200", description = "Payment prepared successfully")
-    public ResponseEntity<ApiResult<String>> preparePayment(HttpSession session, @RequestBody PaymentRequest.Prepare prepareRequest) {
-        paymentService.prepare(session, prepareRequest);
+    public ResponseEntity<ApiResult<String>> preparePayment(@RequestBody PaymentRequest.Prepare prepareRequest) {
+        redisService.saveDataWithTimeOut(
+            prepareRequest.getOrderId(), // key
+            prepareRequest.getAmount().toString(), // value
+            300 // 5분 TTL
+        );
         return ResponseEntity.ok(ApiResult.success(ApiResponseMessages.PAYMENT_PREPARED_SUCCESS));
     }
 
     @PostMapping("/confirm")
-    public ResponseEntity<?> confirmPayment(HttpSession session, @RequestBody PaymentRequest.Confirm confirmRequest, @RequestParam Long userId) throws IOException, InterruptedException {
-        validateSession(session);
-        validatePaymentConfirmRequest(confirmRequest, session);
+    public ResponseEntity<?> confirmPayment(@RequestBody PaymentRequest.Confirm confirmRequest, @RequestParam Long userId) throws IOException, InterruptedException {
+        validatePaymentConfirmRequestV2(confirmRequest);
 
         Response<Object> response = paymentService.sendPaymentRequest(confirmRequest);
         //토스페이먼츠로 보낸 결제 승인 요청에 대한 response 리턴
@@ -49,28 +57,19 @@ public class PaymentController {
         return ResponseEntity.status(response.getStatusCode()).body(response.getBody());
     }
 
+    private void validatePaymentConfirmRequestV2(PaymentRequest.Confirm confirmRequest) {
+        Optional<String> amountStr = getAmountStr(confirmRequest.getOrderId());
 
-    private void validatePaymentConfirmRequest(PaymentRequest.Confirm confirmRequest, HttpSession session) {
-        String savedOrderId = (String) session.getAttribute("orderId");
-        BigDecimal savedAmount = (BigDecimal) session.getAttribute("amount");
+        BigDecimal savedAmount = amountStr
+            .map(BigDecimal::new)
+            .orElseThrow(() -> new RedisKeyNotFoundException("Redis key 'orderId' not found."));
 
-        if (!confirmRequest.getOrderId().equals(savedOrderId) || !confirmRequest.getAmount().equals(savedAmount)) {
-            throw new PaymentDataMismatchException("Payment data mismatch");
+        if (!confirmRequest.getAmount().equals(savedAmount)) {
+            throw new PaymentDataMismatchException("Payment data mismatch : Amount does not match the previous value");
         }
     }
 
-    private void validateSession(HttpSession session) {
-        if (session == null) {
-            throw new InvalidSessionException("Invalid session");
-        }
-
-        String savedOrderId = (String) session.getAttribute("orderId");
-        BigDecimal savedAmount = (BigDecimal) session.getAttribute("amount");
-
-        if (savedOrderId == null || savedAmount == null) {
-            throw new InvalidSessionException("Invalid session");
-        }
+    private Optional<String> getAmountStr(String orderId) {
+        return Optional.ofNullable(redisService.getValue(orderId));
     }
-
-
 }

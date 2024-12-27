@@ -11,6 +11,7 @@ import com.tasksprints.auction.common.response.ApiResult;
 import com.tasksprints.auction.auth.exception.AuthException;
 import com.tasksprints.auction.payment.exception.InvalidSessionException;
 import com.tasksprints.auction.payment.exception.PaymentDataMismatchException;
+import com.tasksprints.auction.payment.exception.RedisKeyNotFoundException;
 import com.tasksprints.auction.product.exception.ProductNotFoundException;
 import com.tasksprints.auction.user.exception.UserNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -68,6 +69,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResult<String>> handleInvalidSessionException(InvalidSessionException ex) {
         String message = "Invalid Session Error. ";
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResult.failure(message));
+    }
+
+    @ExceptionHandler(RedisKeyNotFoundException.class)
+    public ResponseEntity<ApiResult<String>> handleRedisKeyNotFoundException(RedisKeyNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ApiResult.failure(ex.getMessage()));
     }
 
     @ExceptionHandler(PaymentDataMismatchException.class)

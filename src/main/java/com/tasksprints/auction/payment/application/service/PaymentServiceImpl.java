@@ -26,11 +26,6 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentApiSerializer paymentApiSerializer;
 
     @Override
-    public void prepare(HttpSession session, PaymentRequest.Prepare prepareRequest) {
-        session.setAttribute("orderId", prepareRequest.getOrderId());
-        session.setAttribute("amount", prepareRequest.getAmount());
-    }
-    @Override
     public Response<Object> sendPaymentRequest(PaymentRequest.Confirm confirmRequest) throws IOException, InterruptedException{
         return paymentApiSerializer.sendPaymentRequest(confirmRequest);
     }

@@ -43,15 +43,11 @@ public class PaymentServiceImplTest {
     @Mock
     private PaymentRepository paymentRepository;
 
-    private MockHttpSession session;
-
     private User user;
     private Wallet wallet;
 
     @BeforeEach
     void setUp() {
-        session = new MockHttpSession();
-
         wallet = Wallet.builder()
             .id(1L)
             .balance(BigDecimal.ZERO)
@@ -67,25 +63,6 @@ public class PaymentServiceImplTest {
             .wallet(wallet)
             .build();
 
-
-    }
-
-    @Nested
-    @DisplayName("결제 전 세션 임시 저장 테스트")
-    class 임시_저장_테스트 {
-        @Test
-        void 결제_요청을_받았을_때_세션에_값이_저장되면_성공한다() {
-            //given
-            String orderId = "testOrderId";
-            BigDecimal amount = BigDecimal.valueOf(1000.00);
-            PaymentRequest.Prepare prepareRequest = new PaymentRequest.Prepare(orderId, amount);
-
-            //when
-            paymentService.prepare(session, prepareRequest);
-            //then
-            assertThat(session.getAttribute("orderId")).isEqualTo(orderId);
-            assertThat(session.getAttribute("amount")).isEqualTo(amount);
-        }
 
     }
 
