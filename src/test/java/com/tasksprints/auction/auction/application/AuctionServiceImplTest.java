@@ -1,5 +1,6 @@
 package com.tasksprints.auction.domain.auction.service;
 
+import com.tasksprints.auction.auction.application.service.AuctionScheduleService;
 import com.tasksprints.auction.auction.domain.dto.request.AuctionRequest;
 import com.tasksprints.auction.auction.domain.dto.response.AuctionResponse;
 import com.tasksprints.auction.auction.exception.AuctionAlreadyClosedException;
@@ -48,6 +49,8 @@ class AuctionServiceImplTest {
     @InjectMocks
     private AuctionServiceImpl auctionService;
 
+    @Mock
+    private AuctionScheduleService scheduleService;
     private User seller;
 
     @BeforeEach

@@ -1,5 +1,6 @@
 package com.tasksprints.auction.auction.domain.entity;
 
+import com.tasksprints.auction.auction.exception.InvalidAuctionStateException;
 import com.tasksprints.auction.bid.domain.entity.Bid;
 import com.tasksprints.auction.common.entity.BaseEntity;
 import com.tasksprints.auction.product.domain.entity.Product;
@@ -74,6 +75,29 @@ public class Auction extends BaseEntity {
     public void addUser(User seller) {
         seller.addAuction(this);
         this.seller = seller;
+    }
+
+
+    public void activate() {
+        canActivate();
+        this.auctionStatus = AuctionStatus.ACTIVE;
+    }
+
+    public void close() {
+        canClose();
+        this.auctionStatus = AuctionStatus.CLOSED;
+    }
+
+    private void canActivate() {
+        if (!auctionStatus.equals(AuctionStatus.PENDING)) {
+            throw new InvalidAuctionStateException("Auction state change error: Can only start an auction from PENDING state.");
+        }
+    }
+
+    private void canClose() {
+        if (!auctionStatus.equals(AuctionStatus.ACTIVE)) {
+            throw new InvalidAuctionStateException("Auction state change error: Can only close an auction from ACTIVE state.");
+        }
     }
 
 

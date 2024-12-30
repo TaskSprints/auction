@@ -26,7 +26,7 @@ import java.util.List;
 public class AuctionServiceImpl implements AuctionService {
     private final UserRepository userRepository;
     private final AuctionRepository auctionRepository;
-
+    private final AuctionScheduleService schedulerService;
     @Override
     public AuctionResponse createAuction(Long userId, AuctionRequest.Create auctionRequest) {
         User seller = userRepository.findById(userId)
@@ -53,6 +53,10 @@ public class AuctionServiceImpl implements AuctionService {
          * STEP 2
          * - 각각의 기능을 완전 분리
          */
+        // 시작 및 종료 시간 스케줄 등록
+        schedulerService.scheduleStart(savedAuction.getId(), savedAuction.getStartTime());
+        schedulerService.scheduleEnd(savedAuction.getId(), savedAuction.getEndTime());
+
         return AuctionResponse.of(savedAuction);
     }
 
@@ -100,7 +104,6 @@ public class AuctionServiceImpl implements AuctionService {
     public AuctionResponse getAuctionById(Long auctionId) {
         Auction foundAuction = auctionRepository.findAuctionById(auctionId)
             .orElseThrow(() -> new AuctionNotFoundException("Auction not found"));
-        auctionRepository.save(foundAuction);
         return AuctionResponse.of(foundAuction);
     }
 

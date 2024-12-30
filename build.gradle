@@ -77,6 +77,9 @@ dependencies {
     //Redis
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.apache.commons:commons-pool2'
+
+    //Job Runr
+    implementation 'org.jobrunr:jobrunr-spring-boot-3-starter:7.3.2'
 }
 tasks.named('test') {
     useJUnitPlatform()

@@ -1,5 +1,6 @@
 package com.tasksprints.auction.common.initializer;
 
+import com.tasksprints.auction.auction.application.service.AuctionScheduleService;
 import com.tasksprints.auction.auction.domain.entity.Auction;
 import com.tasksprints.auction.auction.domain.entity.AuctionCategory;
 import com.tasksprints.auction.auction.domain.entity.AuctionStatus;
@@ -27,12 +28,14 @@ public class AuctionInitializer implements ApplicationRunner {
 
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
+    private final AuctionScheduleService auctionScheduleService; // 스케줄 서비스 추가
 
-    public AuctionInitializer(UserRepository userRepository, AuctionRepository auctionRepository, ProductRepository productRepository, ProductImageRepository productImageRepository) {
+    public AuctionInitializer(UserRepository userRepository, AuctionRepository auctionRepository, ProductRepository productRepository, ProductImageRepository productImageRepository, AuctionScheduleService auctionScheduleService) {
         this.userRepository = userRepository;
         this.auctionRepository = auctionRepository;
         this.productRepository = productRepository;
         this.productImageRepository = productImageRepository;
+        this.auctionScheduleService = auctionScheduleService;
     }
 
     private void createDummyUser() {
@@ -40,8 +43,8 @@ public class AuctionInitializer implements ApplicationRunner {
         userRepository.save(user1);
     }
 
-    private Auction createDummyAuction(User user) {
-        Auction auction = Auction.create(LocalDateTime.now(), LocalDateTime.now().plusHours(2), BigDecimal.TEN, AuctionCategory.PRIVATE_FREE, AuctionStatus.ACTIVE, user);
+    private Auction createDummyAuction(User user, LocalDateTime startTime, LocalDateTime endTime) {
+        Auction auction = Auction.create(startTime, endTime, BigDecimal.TEN, AuctionCategory.PRIVATE_FREE, AuctionStatus.PENDING, user);
         return auctionRepository.save(auction);
     }
 
@@ -58,11 +61,18 @@ public class AuctionInitializer implements ApplicationRunner {
     @Transactional
     public void run(ApplicationArguments args) throws Exception {
         User user = userRepository.save(User.createWithWallet("name", "email@email.com", "password", "NickName"));
-
+        LocalDateTime now = LocalDateTime.now();
         // 각 제품에 대해 새로운 경매를 생성
-        for (int i = 0; i < 100; i++) {
-            Auction auction = createDummyAuction(user);
+        for (int i = 0; i < 50; i++) {
+            Thread.sleep(100);
+            LocalDateTime startTime = now.plusSeconds(i * 2); // 시작 시간: 2초 간격
+            LocalDateTime endTime = startTime.plusSeconds(15); // 종료 시간: 시작 후 15초
+
+            Auction auction = createDummyAuction(user, startTime, endTime);
             createDummyProduct(user, auction);
+
+            auctionScheduleService.scheduleStart(auction.getId(), startTime);
+            auctionScheduleService.scheduleEnd(auction.getId(), endTime);
         }
     }
 }
