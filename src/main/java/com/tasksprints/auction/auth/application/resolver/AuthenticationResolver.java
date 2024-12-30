@@ -45,7 +45,7 @@ public class AuthenticationResolver implements HandlerMethodArgumentResolver {
             jwtProvider.validateToken(accessToken);
             jwtProvider.validateToken(refreshToken);
 
-            Long userId = Long.valueOf(jwtProvider.getSubject(refreshToken));
+            Long userId = Long.valueOf(jwtProvider.getSubject(accessToken));
             return Accessor.user(userId);
         } catch (RefreshTokenException e) {
             return Accessor.guest();

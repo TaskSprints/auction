@@ -1,6 +1,9 @@
 package com.tasksprints.auction.payment.presentation;
 
+import com.tasksprints.auction.auth.domain.model.Accessor;
 import com.tasksprints.auction.common.constant.ApiResponseMessages;
+import com.tasksprints.auction.common.jwt.Auth;
+import com.tasksprints.auction.common.jwt.UserOnly;
 import com.tasksprints.auction.common.response.ApiResult;
 import com.tasksprints.auction.payment.api.Response;
 import com.tasksprints.auction.payment.domain.dto.request.PaymentRequest;
@@ -43,9 +46,12 @@ public class PaymentController {
     }
 
     @PostMapping("/confirm")
-    public ResponseEntity<?> confirmPayment(@RequestBody PaymentRequest.Confirm confirmRequest, @RequestParam Long userId) throws IOException, InterruptedException {
-        validatePaymentConfirmRequestV2(confirmRequest);
+    @UserOnly
+    public ResponseEntity<?> confirmPayment(@RequestBody PaymentRequest.Confirm confirmRequest, @Auth Accessor accessor) throws IOException, InterruptedException {
+        Long userId = accessor.userId();
+        System.out.println("유저:"+userId);
 
+        validatePaymentConfirmRequestV2(confirmRequest);
         Response<Object> response = paymentService.sendPaymentRequest(confirmRequest);
         //토스페이먼츠로 보낸 결제 승인 요청에 대한 response 리턴
         Response<Object> objectResponse = paymentService.handleTossPaymentResponse(userId, confirmRequest, response);
