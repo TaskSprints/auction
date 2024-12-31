@@ -1,5 +1,7 @@
 package com.tasksprints.auction.bid.application.service;
 
+import com.tasksprints.auction.auction.domain.entity.AuctionStatus;
+import com.tasksprints.auction.auction.exception.InvalidAuctionStateException;
 import com.tasksprints.auction.bid.application.service.BidService;
 import com.tasksprints.auction.bid.exception.BidNotFoundException;
 import com.tasksprints.auction.bid.exception.InvalidBidAmountException;
@@ -13,6 +15,8 @@ import com.tasksprints.auction.bid.domain.dto.BidResponse;
 import com.tasksprints.auction.user.exception.UserNotFoundException;
 import com.tasksprints.auction.user.domain.entity.User;
 import com.tasksprints.auction.user.infrastructure.UserRepository;
+import com.tasksprints.auction.wallet.domain.entity.Wallet;
+import com.tasksprints.auction.wallet.exception.InSufficientBalanceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -34,8 +38,9 @@ public class BidServiceImpl implements BidService {
     @Override
     public BidResponse submitBid(Long userId, Long auctionId, BigDecimal amount) {
         // 입찰 시 유효성 검사
-        User foundUser = userRepository.findById(userId)
+        User foundUser = userRepository.findByIdWithWallet(userId)
             .orElseThrow(() -> new UserNotFoundException("User not found"));
+
         Auction foundAuction = auctionRepository.findById(auctionId)
             .orElseThrow(() -> new AuctionNotFoundException("Auction not found"));
 
@@ -43,10 +48,19 @@ public class BidServiceImpl implements BidService {
         if (foundAuction.getEndTime().isBefore(LocalDateTime.now())) {
             throw new AuctionEndedException("This auction has already ended.");
         }
+        // 경매가 종료되었는지 확인
+        if (!foundAuction.getAuctionStatus().equals(AuctionStatus.ACTIVE)) {
+            throw new InvalidAuctionStateException("Bids can only be placed if the auction is active.");
+        }
 
         // 최소 입찰 금액 충족 여부 확인
         if (amount.compareTo(foundAuction.getStartingBid()) < 0) {
             throw new InvalidBidAmountException("Bid amount is less than the minimum required bid amount.");
+        }
+
+        // 지갑 잔액 검증
+        if (foundUser.getWallet().getBalance().compareTo(amount) < 0) {
+            throw new InSufficientBalanceException("Insufficient Wallet balance");
         }
 
         // 입찰 생성 및 저장
