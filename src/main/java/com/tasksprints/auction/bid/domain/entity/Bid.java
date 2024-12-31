@@ -54,7 +54,9 @@ public class Bid extends BaseEntity {
     }
 
     public void addAuction(Auction auction) {
+        // 양방향 참조 맺어줌
         this.auction = auction;
+        auction.addBid(this);
     }
 
     public void addUserAndAuction(User user, Auction auction) {

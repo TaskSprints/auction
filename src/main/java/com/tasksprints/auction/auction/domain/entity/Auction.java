@@ -42,6 +42,12 @@ public class Auction extends BaseEntity {
     @Column(nullable = false)
     private BigDecimal startingBid;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private BigDecimal highestBidAmount = BigDecimal.ZERO;
+
+    private Long highestBidderId;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @ToString.Exclude
@@ -51,7 +57,7 @@ public class Auction extends BaseEntity {
     @Builder.Default
     private Product product = null;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "auction", fetch = FetchType.LAZY)
     @Builder.Default
     private List<Bid> bids = new ArrayList<>();
 
@@ -62,6 +68,7 @@ public class Auction extends BaseEntity {
             .startingBid(startingBid)
             .auctionCategory(auctionCategory)
             .auctionStatus(auctionStatus)
+            .highestBidAmount(BigDecimal.ZERO)
             .build();
         newAuction.addUser(seller);
         return newAuction;
@@ -77,6 +84,14 @@ public class Auction extends BaseEntity {
         this.seller = seller;
     }
 
+    public void addBid(Bid bid) {
+        this.bids.add(bid);
+    }
+
+    public void updateHighestBid(Long userId, BigDecimal amount) {
+        this.highestBidderId = userId;
+        this.highestBidAmount = amount;
+    }
 
     public void activate() {
         canActivate();
@@ -99,6 +114,5 @@ public class Auction extends BaseEntity {
             throw new InvalidAuctionStateException("Auction state change error: Can only close an auction from ACTIVE state.");
         }
     }
-
 
 }

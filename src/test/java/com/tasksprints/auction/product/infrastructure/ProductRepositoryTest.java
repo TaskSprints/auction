@@ -178,6 +178,7 @@ public class ProductRepositoryTest {
             .auctionStatus(AuctionStatus.ACTIVE)
             .auctionCategory(AuctionCategory.PRIVATE_FREE)
             .seller(owner)
+            .highestBidAmount(BigDecimal.ZERO)
             .build();
         return auctionRepository.save(auction);
     }
@@ -190,6 +191,7 @@ public class ProductRepositoryTest {
             .auctionStatus(auctionStatus)
             .auctionCategory(AuctionCategory.PRIVATE_FREE)
             .seller(owner)
+            .highestBidAmount(BigDecimal.ZERO)
             .build();
         return auctionRepository.save(auction);
     }
