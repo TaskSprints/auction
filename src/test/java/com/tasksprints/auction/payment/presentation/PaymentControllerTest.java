@@ -1,13 +1,13 @@
 package com.tasksprints.auction.payment.presentation;
 
 import com.tasksprints.auction.BaseControllerTest;
-import com.tasksprints.auction.common.constant.ApiResponseMessages;
+import com.tasksprints.auction.auth.application.resolver.AuthenticationResolver;
+import com.tasksprints.auction.auth.domain.model.Accessor;
 import com.tasksprints.auction.payment.api.Response;
+import com.tasksprints.auction.payment.application.service.PaymentService;
 import com.tasksprints.auction.payment.domain.dto.response.PaymentErrorResponse;
 import com.tasksprints.auction.payment.domain.dto.response.PaymentResponse;
-import com.tasksprints.auction.payment.exception.InvalidSessionException;
 import com.tasksprints.auction.payment.exception.PaymentDataMismatchException;
-import com.tasksprints.auction.payment.application.service.PaymentService;
 import com.tasksprints.auction.payment.exception.RedisKeyNotFoundException;
 import com.tasksprints.auction.payment.infrastructure.redis.RedisService;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,15 +19,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
-import java.util.concurrent.TimeUnit;
 
-import static com.tasksprints.auction.common.constant.ApiResponseMessages.*;
+import static com.tasksprints.auction.common.constant.ApiResponseMessages.PAYMENT_PREPARED_SUCCESS;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,8 +42,15 @@ public class PaymentControllerTest extends BaseControllerTest {
     @MockBean
     private RedisService redisService;
 
+    @MockBean
+    private AuthenticationResolver authResolver;
+    private Accessor accessor;
+
     @BeforeEach
-    void setup() {
+    void setup() throws Exception {
+        accessor = Accessor.user(1L);
+        when(authResolver.supportsParameter(any())).thenReturn(true);
+        when(authResolver.resolveArgument(any(),any(),any(),any())).thenReturn(accessor);
     }
 
     @Test
@@ -87,7 +91,6 @@ public class PaymentControllerTest extends BaseControllerTest {
 
             // When & Then
             mockMvc.perform(post("/api/v1/payment/confirm")
-                    .param("userId", "1")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(jsonRequest))
                 .andExpect(status().isBadRequest())
@@ -111,7 +114,6 @@ public class PaymentControllerTest extends BaseControllerTest {
 
             // When & Then
             mockMvc.perform(post("/api/v1/payment/confirm")
-                    .param("userId", "1")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(jsonRequest))
                 .andExpect(status().isBadRequest())
@@ -143,7 +145,6 @@ public class PaymentControllerTest extends BaseControllerTest {
 
         // When / Then
         mockMvc.perform(post("/api/v1/payment/confirm")
-                .param("userId", "1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonRequest))
             .andExpect(status().isOk())
@@ -179,7 +180,6 @@ public class PaymentControllerTest extends BaseControllerTest {
 
         // When / Then
         mockMvc.perform(post("/api/v1/payment/confirm")
-                .param("userId", "1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonRequest))
             .andExpect(status().isBadRequest())
