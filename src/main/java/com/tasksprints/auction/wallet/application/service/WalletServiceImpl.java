@@ -19,11 +19,6 @@ public class WalletServiceImpl implements WalletService {
     }
 
     @Override
-    public boolean isSufficientMoney() {
-        return false;
-    }
-
-    @Override
     public Wallet getWalletByUserId(Long userId) {
         return walletRepository.getWalletByUserId(userId);
     }

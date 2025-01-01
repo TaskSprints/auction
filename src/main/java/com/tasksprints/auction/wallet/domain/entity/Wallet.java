@@ -3,6 +3,7 @@ package com.tasksprints.auction.wallet.domain.entity;
 import com.tasksprints.auction.common.entity.BaseEntityWithUpdate;
 import com.tasksprints.auction.payment.domain.entity.Payment;
 import com.tasksprints.auction.user.domain.entity.User;
+import com.tasksprints.auction.wallet.exception.InSufficientBalanceException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,6 +58,16 @@ public class Wallet extends BaseEntityWithUpdate {
     }
 
     public void chargeBalance(BigDecimal amount) {
-        this.balance = this.balance.add(amount);
+        balance = balance.add(amount);
+    }
+
+    public void deductBalance(BigDecimal amount) {
+        isSufficientBalance(amount);
+        balance = balance.subtract(amount);
+    }
+    private void isSufficientBalance(BigDecimal amount) {
+        if (balance.compareTo(amount) < 0) {
+           throw new InSufficientBalanceException("Insufficient Wallet balance");
+        }
     }
 }
