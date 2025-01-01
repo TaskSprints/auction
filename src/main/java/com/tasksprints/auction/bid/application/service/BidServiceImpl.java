@@ -76,6 +76,7 @@ public class BidServiceImpl implements BidService {
             throw new InvalidBidAmountException("The bid amount is greater than the current highest bid in the auction.");
         }
         foundAuction.updateHighestBid(userId, amount);
+        auctionRepository.save(foundAuction);
 
         return BidResponse.of(savedBid);
     }
