@@ -7,6 +7,7 @@ import com.tasksprints.auction.product.domain.entity.Product;
 import com.tasksprints.auction.user.domain.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -17,6 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@SQLRestriction("closed_at is null")
 @ToString
 @Entity(name = "auction")
 public class Auction extends BaseEntity {
@@ -61,6 +63,9 @@ public class Auction extends BaseEntity {
     @Builder.Default
     private List<Bid> bids = new ArrayList<>();
 
+    @Column(nullable = true, name= "closed_at")
+    private LocalDateTime closedAt;
+
     public static Auction create(LocalDateTime startTime, LocalDateTime endTime, BigDecimal startingBid, AuctionCategory auctionCategory, AuctionStatus auctionStatus, User seller) {
         Auction newAuction = Auction.builder()
             .startTime(startTime)
@@ -101,6 +106,7 @@ public class Auction extends BaseEntity {
     public void close() {
         canClose();
         this.auctionStatus = AuctionStatus.CLOSED;
+        this.closedAt = LocalDateTime.now();
     }
 
     private void canActivate() {
