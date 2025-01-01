@@ -11,13 +11,16 @@ import com.tasksprints.auction.product.infrastructure.ProductImageRepository;
 import com.tasksprints.auction.product.infrastructure.ProductRepository;
 import com.tasksprints.auction.user.domain.entity.User;
 import com.tasksprints.auction.user.infrastructure.UserRepository;
+import com.tasksprints.auction.wallet.domain.entity.Wallet;
 import jakarta.transaction.Transactional;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -43,8 +46,18 @@ public class AuctionInitializer implements ApplicationRunner {
         userRepository.save(user1);
     }
 
-    private Auction createDummyAuction(User user, LocalDateTime startTime, LocalDateTime endTime) {
-        Auction auction = Auction.create(startTime, endTime, BigDecimal.TEN, AuctionCategory.PRIVATE_FREE, AuctionStatus.PENDING, user);
+    private Auction createDummyAuction(User user, LocalDateTime startTime, LocalDateTime endTime, Long highestBidderId) {
+        Auction auction = Auction.builder()
+                .startTime(startTime)
+                .endTime(endTime)
+                .startingBid(BigDecimal.TEN)
+                .auctionCategory(AuctionCategory.PUBLIC_PAID)
+                .auctionStatus(AuctionStatus.PENDING)
+                .highestBidAmount(BigDecimal.valueOf(100))
+                .highestBidderId(highestBidderId)
+                .build();
+        auction.addUser(user);
+
         return auctionRepository.save(auction);
     }
 
@@ -60,19 +73,37 @@ public class AuctionInitializer implements ApplicationRunner {
     @Override
     @Transactional
     public void run(ApplicationArguments args) throws Exception {
-        User user = userRepository.save(User.createWithWallet("name", "email@email.com", "password", "NickName"));
-        LocalDateTime now = LocalDateTime.now();
+
         // 각 제품에 대해 새로운 경매를 생성
         for (int i = 0; i < 50; i++) {
-            Thread.sleep(100);
-            LocalDateTime startTime = now.plusSeconds(i * 2); // 시작 시간: 2초 간격
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime startTime = now.plus(Duration.ofMillis(15000 + i * 500)); // 시작 시간: 15초 텀을 두고 0.5 초 간격
             LocalDateTime endTime = startTime.plusSeconds(15); // 종료 시간: 시작 후 15초
 
-            Auction auction = createDummyAuction(user, startTime, endTime);
+            User user = createUserWithWallet(i);
+            Auction auction = createDummyAuction(user, startTime, endTime, (long) i + 1);
             createDummyProduct(user, auction);
 
             auctionScheduleService.scheduleStart(auction.getId(), startTime);
             auctionScheduleService.scheduleEnd(auction.getId(), endTime);
         }
+    }
+
+    private User createUserWithWallet(int i) {
+        User user = User.builder()
+                .name("name" + i)
+                .email("email" + i + "@email.com")
+                .password("password")
+                .nickName("NickName" + i)
+                .build();
+
+        Wallet wallet = Wallet.builder()
+                .user(user)
+                .userName("name" + i)
+                .balance(BigDecimal.valueOf(100000.0))
+                .build();
+
+        user.addWallet(wallet);
+        return userRepository.save(user);
     }
 }
