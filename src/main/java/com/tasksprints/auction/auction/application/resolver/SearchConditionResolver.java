@@ -49,7 +49,6 @@ public class SearchConditionResolver implements HandlerMethodArgumentResolver {
         validateIsStartBeforeEnd(parsedStartTime, parsedEndTime);
         validateMinLessThanMax(parsedMinPrice, parsedMaxPrice);
 
-
         // SearchCondition 객체 생성 및 반환
         return new AuctionRequest.SearchCondition(
             parsedAuctionCategory,
@@ -64,18 +63,14 @@ public class SearchConditionResolver implements HandlerMethodArgumentResolver {
     }
 
     private void validateMinLessThanMax(BigDecimal parsedMinPrice, BigDecimal parsedMaxPrice) {
-        if (parsedMinPrice != null && parsedMaxPrice != null) {
-            if (parsedMinPrice.compareTo(parsedMaxPrice) > 0) {
-                throw new IllegalArgumentException("minPrice cannot be greater than maxPrice.");
-            }
+        if (parsedMinPrice != null && parsedMaxPrice != null && parsedMinPrice.compareTo(parsedMaxPrice) > 0) {
+            throw new IllegalArgumentException("minPrice cannot be greater than maxPrice.");
         }
     }
 
     private void validateIsStartBeforeEnd(LocalDateTime parsedStartTime, LocalDateTime parsedEndTime) {
-        if (parsedStartTime != null && parsedEndTime != null) {
-            if (parsedStartTime.isAfter(parsedEndTime)) {
-                throw new IllegalArgumentException("startTime cannot be after endTime.");
-            }
+        if (parsedStartTime != null && parsedEndTime != null && parsedStartTime.isAfter(parsedEndTime)) {
+            throw new IllegalArgumentException("startTime cannot be after endTime.");
         }
     }
 

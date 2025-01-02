@@ -31,7 +31,8 @@ public class AuctionJob {
         Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("Not Found Auction ID: " + auctionId));
         auction.close();
         //잔액 차감 이벤트 요청
-        applicationEventPublisher.publishEvent(new AuctionClosedEvent(auctionId, auction.getHighestBidderId(), auction.getHighestBidAmount()));
+        AuctionClosedEvent event = new AuctionClosedEvent(auctionId, auction.getHighestBidderId(), auction.getHighestBidAmount());
+        applicationEventPublisher.publishEvent(event);
         System.out.println("경매 종료 - ID: " + auctionId);
     }
 }

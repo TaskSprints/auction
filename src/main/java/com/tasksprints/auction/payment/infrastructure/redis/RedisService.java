@@ -16,7 +16,7 @@ public class RedisService {
         redisTemplate.opsForValue().set(key, value);
     }
 
-    public void saveDataWithTimeOut(String key, String value, long timeoutSeconds) {
+    public void saveDataWithExpiration(String key, String value, long timeoutSeconds) {
         redisTemplate.opsForValue().set(key, value, Duration.ofSeconds(timeoutSeconds));
     }
 

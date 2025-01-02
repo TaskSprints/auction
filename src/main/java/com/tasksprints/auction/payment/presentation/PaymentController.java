@@ -37,10 +37,10 @@ public class PaymentController {
     @Operation(summary = "Temporarily stores the payment element", description = "Save orderID and amount in session")
     @ApiResponse(responseCode = "200", description = "Payment prepared successfully")
     public ResponseEntity<ApiResult<String>> preparePayment(@RequestBody PaymentRequest.Prepare prepareRequest) {
-        redisService.saveDataWithTimeOut(
+        redisService.saveDataWithExpiration(
             prepareRequest.getOrderId(), // key
             prepareRequest.getAmount().toString(), // value
-            300 // 5분 TTL
+            60 * 5 // 5분 TTL
         );
         return ResponseEntity.ok(ApiResult.success(ApiResponseMessages.PAYMENT_PREPARED_SUCCESS));
     }
@@ -49,7 +49,7 @@ public class PaymentController {
     @UserOnly
     public ResponseEntity<?> confirmPayment(@RequestBody PaymentRequest.Confirm confirmRequest, @Auth Accessor accessor) throws IOException, InterruptedException {
         Long userId = accessor.userId();
-        System.out.println("유저:"+userId);
+        System.out.println("유저:" + userId);
 
         validatePaymentConfirmRequestV2(confirmRequest);
         Response<Object> response = paymentService.sendPaymentRequest(confirmRequest);
