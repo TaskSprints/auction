@@ -69,7 +69,7 @@ public class PaymentControllerTest extends BaseControllerTest {
             .andExpect(status().isOk())
             .andExpect(jsonPath("$.message").value(PAYMENT_PREPARED_SUCCESS));
 
-        verify(redisService).saveDataWithTimeOut(
+        verify(redisService).saveDataWithExpiration(
             eq("orderId"),
             eq("1000.00"),
             eq(300L)
