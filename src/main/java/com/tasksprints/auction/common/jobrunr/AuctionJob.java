@@ -4,6 +4,7 @@ import com.tasksprints.auction.auction.domain.entity.Auction;
 import com.tasksprints.auction.auction.domain.event.AuctionClosedEvent;
 import com.tasksprints.auction.auction.exception.AuctionNotFoundException;
 import com.tasksprints.auction.auction.infrastructure.AuctionRepository;
+import com.tasksprints.auction.bid.domain.entity.Bid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
@@ -31,7 +32,8 @@ public class AuctionJob {
         Auction auction = auctionRepository.findById(auctionId).orElseThrow(() -> new AuctionNotFoundException("Not Found Auction ID: " + auctionId));
         auction.close();
         //잔액 차감 이벤트 요청
-        AuctionClosedEvent event = new AuctionClosedEvent(auctionId, auction.getHighestBidderId(), auction.getHighestBidAmount());
+        Bid bid = auction.getBids().getFirst();
+        AuctionClosedEvent event = new AuctionClosedEvent(auctionId, bid.getId(), bid.getAmount());
         applicationEventPublisher.publishEvent(event);
         System.out.println("경매 종료 - ID: " + auctionId);
     }

@@ -5,6 +5,8 @@ import com.tasksprints.auction.auction.domain.entity.Auction;
 import com.tasksprints.auction.auction.domain.entity.AuctionCategory;
 import com.tasksprints.auction.auction.domain.entity.AuctionStatus;
 import com.tasksprints.auction.auction.infrastructure.AuctionRepository;
+import com.tasksprints.auction.bid.domain.entity.Bid;
+import com.tasksprints.auction.bid.infrastructure.BidRepository;
 import com.tasksprints.auction.product.domain.entity.Product;
 import com.tasksprints.auction.product.domain.entity.ProductImage;
 import com.tasksprints.auction.product.infrastructure.ProductImageRepository;
@@ -22,6 +24,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class AuctionInitializer implements ApplicationRunner {
@@ -32,13 +35,15 @@ public class AuctionInitializer implements ApplicationRunner {
     private final ProductRepository productRepository;
     private final ProductImageRepository productImageRepository;
     private final AuctionScheduleService auctionScheduleService; // 스케줄 서비스 추가
+    private final BidRepository bidRepository;
 
-    public AuctionInitializer(UserRepository userRepository, AuctionRepository auctionRepository, ProductRepository productRepository, ProductImageRepository productImageRepository, AuctionScheduleService auctionScheduleService) {
+    public AuctionInitializer(UserRepository userRepository, AuctionRepository auctionRepository, ProductRepository productRepository, ProductImageRepository productImageRepository, AuctionScheduleService auctionScheduleService, BidRepository bidRepository) {
         this.userRepository = userRepository;
         this.auctionRepository = auctionRepository;
         this.productRepository = productRepository;
         this.productImageRepository = productImageRepository;
         this.auctionScheduleService = auctionScheduleService;
+        this.bidRepository = bidRepository;
     }
 
     private void createDummyUser() {
@@ -46,15 +51,13 @@ public class AuctionInitializer implements ApplicationRunner {
         userRepository.save(user1);
     }
 
-    private Auction createDummyAuction(User user, LocalDateTime startTime, LocalDateTime endTime, Long highestBidderId) {
+    private Auction createDummyAuction(User user, LocalDateTime startTime, LocalDateTime endTime) {
         Auction auction = Auction.builder()
                 .startTime(startTime)
                 .endTime(endTime)
                 .startingBid(BigDecimal.TEN)
                 .auctionCategory(AuctionCategory.PUBLIC_PAID)
                 .auctionStatus(AuctionStatus.PENDING)
-                .highestBidAmount(BigDecimal.valueOf(100))
-                .highestBidderId(highestBidderId)
                 .build();
         auction.addUser(user);
 
@@ -70,6 +73,15 @@ public class AuctionInitializer implements ApplicationRunner {
         productRepository.save(product);
     }
 
+    private void createDummyBid(Auction auction) {
+        Bid bid = Bid.builder()
+            .uuid(UUID.randomUUID().toString())
+            .amount(BigDecimal.valueOf(100))
+            .auction(auction)
+            .build();
+        bidRepository.save(bid);
+    }
+
     @Override
     @Transactional
     public void run(ApplicationArguments args) throws Exception {
@@ -81,8 +93,9 @@ public class AuctionInitializer implements ApplicationRunner {
             LocalDateTime endTime = startTime.plusSeconds(15); // 종료 시간: 시작 후 15초
 
             User user = createUserWithWallet(i);
-            Auction auction = createDummyAuction(user, startTime, endTime, (long) i + 1);
+            Auction auction = createDummyAuction(user, startTime, endTime);
             createDummyProduct(user, auction);
+            createDummyBid(auction);
 
             auctionScheduleService.scheduleStart(auction.getId(), startTime);
             auctionScheduleService.scheduleEnd(auction.getId(), endTime);
