@@ -20,7 +20,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDetailResponse createUser(UserRequest.Register request) {
-        User user = User.create(request.getName(), request.getEmail(), request.getPassword(), request.getNickname());
+        User user = User.createWithWallet(request.getName(), request.getEmail(), request.getPassword(), request.getNickname());
 
         User newUser = userRepository.save(user);
         return UserDetailResponse.of(newUser);
