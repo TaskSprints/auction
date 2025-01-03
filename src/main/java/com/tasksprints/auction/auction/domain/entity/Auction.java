@@ -44,12 +44,6 @@ public class Auction extends BaseEntity {
     @Column(nullable = false)
     private BigDecimal startingBid;
 
-    @Builder.Default
-    @Column(nullable = false)
-    private BigDecimal highestBidAmount = BigDecimal.ZERO;
-
-    private Long highestBidderId;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @ToString.Exclude
@@ -73,7 +67,6 @@ public class Auction extends BaseEntity {
             .startingBid(startingBid)
             .auctionCategory(auctionCategory)
             .auctionStatus(auctionStatus)
-            .highestBidAmount(BigDecimal.ZERO)
             .build();
         newAuction.addUser(seller);
         return newAuction;
@@ -87,15 +80,6 @@ public class Auction extends BaseEntity {
     public void addUser(User seller) {
         seller.addAuction(this);
         this.seller = seller;
-    }
-
-    public void addBid(Bid bid) {
-        this.bids.add(bid);
-    }
-
-    public void updateHighestBid(Long userId, BigDecimal amount) {
-        this.highestBidderId = userId;
-        this.highestBidAmount = amount;
     }
 
     public void activate() {

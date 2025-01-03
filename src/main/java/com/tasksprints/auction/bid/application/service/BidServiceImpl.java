@@ -40,7 +40,6 @@ public class BidServiceImpl implements BidService {
         // 입찰 시 유효성 검사
         User foundUser = userRepository.findByIdWithWallet(userId)
             .orElseThrow(() -> new UserNotFoundException("User not found"));
-
         Auction foundAuction = auctionRepository.findById(auctionId)
             .orElseThrow(() -> new AuctionNotFoundException("Auction not found"));
 
@@ -66,18 +65,6 @@ public class BidServiceImpl implements BidService {
         // 입찰 생성 및 저장
         Bid createdBid = Bid.create(amount, foundUser, foundAuction);
         Bid savedBid = bidRepository.save(createdBid);
-
-        /**
-         * 추가 로직
-         * - auction의 highest Bid인지 검증하고, highest bid라면 update한다.
-         *  연관 관계 편의 메서드로 양방향 참조 맺어줌 -> DB와 객체간 일관성을 위함
-         */
-        if (amount.compareTo(foundAuction.getHighestBidAmount()) < 0 ) {
-            throw new InvalidBidAmountException("The bid amount is greater than the current highest bid in the auction.");
-        }
-        foundAuction.updateHighestBid(userId, amount);
-        auctionRepository.save(foundAuction);
-
         return BidResponse.of(savedBid);
     }
 
