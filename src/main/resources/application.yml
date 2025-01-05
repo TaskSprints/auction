@@ -57,7 +57,7 @@ logging:
   level:
     org.springframework.scheduling.annotation.AsyncAnnotationBeanPostProcessor: DEBUG
     org.springframework.context.event: DEBUG
-    org.hibernate.SQL: debug
+    org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: INFO
     root: INFO
 server:

@@ -105,4 +105,5 @@ public class Auction extends BaseEntity {
         }
     }
 
+
 }
